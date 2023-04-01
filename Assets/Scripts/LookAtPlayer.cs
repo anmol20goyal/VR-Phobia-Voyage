@@ -12,57 +12,32 @@ public class LookAtPlayer : MonoBehaviour
 
     #region Variables
 
+    [SerializeField] public Vector3 SetRotationLimit_max;
+    [SerializeField] public Vector3 SetRotationLimit_min;
+
     public bool inProximity;
-    public float lookAtDistance = 7;
-    public float lookAtSpeed = 3;
-    [SerializeField] private Quaternion currentRotation;
-    
+    [SerializeField] private float lookAtDistance = 7;
+
     #endregion
 
     private void Start()
     {
         inProximity = false;
-        // currentCamera = Camera.main.transform;
-        // startRotation = eyeGO.localRotation;
     }
 
-    public Vector3 angle;
-    
     private void Update()
     {
-        // transform.LookAt(currentCamera.transform.localPosition + angle);
-    }
-
-    public Vector3 distance;
-
-    private void LateUpdate()
-    {
-        if (lookAtDistance > Vector3.Distance(transform.position, currentCamera.position))
+        var dist = Vector3.Distance(transform.position, currentCamera.position);
+        if (lookAtDistance > dist)
         {
-            distance = currentCamera.position - transform.position;
             inProximity = true;
-            currentRotation = Quaternion.Slerp(
-                currentRotation,
-                Quaternion.LookRotation(distance),
-                Time.deltaTime * lookAtSpeed);
-    
-            transform.localRotation = Quaternion.Euler(currentRotation.eulerAngles + angle);
+            lookAtDistance = 20;
+
+            transform.LookAt(currentCamera.transform.position);
         }
         else
         {
-            // currentRotation = Quaternion.Slerp(currentRotation, eyeGO.rotation, Time.deltaTime * lookAtSpeed);
             inProximity = false;
         }
-    
     }
-    
-    // public float rotationModifier, speed;
-    // private void FixedUpdate()
-    // {
-    //     Vector3 vectorToTarget = currentCamera.transform.position - transform.position;
-    //     float angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg - rotationModifier;
-    //     Quaternion q = Quaternion.AngleAxis(angle, Vector3.forward);
-    //     transform.rotation = Quaternion.Slerp(transform.rotation, q, Time.deltaTime * speed);
-    //
-    // }
 }

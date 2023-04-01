@@ -1,63 +1,59 @@
 using System.Collections;
 using UnityEngine;
-using Random = UnityEngine.Random;
+using DG.Tweening;
 
 public class EyeRotateRandom : MonoBehaviour
 {
 	#region Variables
 	
-	[SerializeField] private Vector3 maxRot, minRot;
+	[SerializeField] private float timeTakenToRotate;
 
-	#endregion
+    #endregion
 
-	#region GameObjects
+    #region GameObjects
 
-	[SerializeField] private GameObject[] eyes;
+    [SerializeField] private GameObject[] eyes;
+	[SerializeField] private AnimationClip[] eyeAnims;
+	[SerializeField] private MeshRenderer[] eyeMesh;
 	[SerializeField] private Material[] eyeMats;
 
 	#endregion
 	
 	private void Start()
 	{
-		foreach (var eye in eyes)
+		for (int i = 0; i < eyes.Length; i++)
 		{
-			StartCoroutine(Rotate(eye));
-			StartCoroutine(ChangeEyeColor(eye.transform.GetChild(0).GetComponent<MeshRenderer>()));
+			RotateEye(eyes[i]);
+			ShowEyeAnimations(eyes[i]);
+			StartCoroutine(ChangeEyeColor(eyeMesh[i]));
 		}
 	}
 
-	private IEnumerator Rotate(GameObject eye)
+	private void RotateEye(GameObject eye)
 	{
-		if (eye.GetComponent<LookAtPlayer>().inProximity) yield return null;
-		
-		var startRot = eye.transform.localRotation;
+		var lookAt = eye.GetComponent<LookAtPlayer>();
 
-		// Set random rotation values
-		var ranRot = new Vector3(
-			Random.Range(minRot.x, maxRot.x),
-			Random.Range(minRot.y, maxRot.y),
-			Random.Range(minRot.z, maxRot.z));
-		
-		var randomRot = Quaternion.Euler(ranRot);
-		
-		var t = 0f;
-		while (t < 2)
-        {
-            t += Time.deltaTime;
-            var xRot = Mathf.Lerp(startRot.x, randomRot.x, t / 2) % 360;
-            var yRot = Mathf.Lerp(startRot.y, randomRot.y, t / 2) % 360;
-            var zRot = Mathf.Lerp(startRot.z, randomRot.z, t / 2) % 360;
-            var wRot = Mathf.Lerp(startRot.w, randomRot.w, t / 2) % 360;
-            eye.transform.localRotation = new Quaternion(xRot, yRot, zRot, wRot);
-            yield return null;
-        }
-		
-		StartCoroutine(Rotate(eye));
+        if (lookAt.inProximity) return;
+
+		var randomRot = new Vector3(
+			Random.Range(lookAt.SetRotationLimit_min.x, lookAt.SetRotationLimit_max.x),
+		    Random.Range(lookAt.SetRotationLimit_min.y, lookAt.SetRotationLimit_max.y),
+			Random.Range(lookAt.SetRotationLimit_min.z, lookAt.SetRotationLimit_max.z));
+
+        eye.transform.DOLocalRotate(randomRot, timeTakenToRotate).SetEase(Ease.Linear).OnComplete(() => RotateEye(eye));
+	}
+
+	private void ShowEyeAnimations(GameObject eye)
+	{
+		var animator = eye.GetComponent<Animator>();
+
+		animator.enabled = true;
+		var animClip = eyeAnims[Random.Range(0, eyeAnims.Length)].name.ToString();
+		animator.Play(animClip);
 	}
 
 	private IEnumerator ChangeEyeColor(MeshRenderer eyeMesh)
 	{
-		// var eyeMat = eyeMesh.material;
 		eyeMesh.material = eyeMats[Random.Range(0, eyeMats.Length)];
 		yield return new WaitForSeconds(1.2f);
 		StartCoroutine(ChangeEyeColor(eyeMesh));
