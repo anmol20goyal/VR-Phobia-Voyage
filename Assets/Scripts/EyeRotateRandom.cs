@@ -8,12 +8,14 @@ public class EyeRotateRandom : MonoBehaviour
 	
 	[SerializeField] private float timeTakenToRotate;
 
-    #endregion
+	#endregion
 
-    #region GameObjects
+	#region GameObjects
 
+	[SerializeField] private Animator _bigEyeAnim;
     [SerializeField] private GameObject[] eyes;
 	[SerializeField] private AnimationClip[] eyeAnims;
+	[SerializeField] private AnimationClip eyeNoiseMoveClip;
 	[SerializeField] private MeshRenderer[] eyeMesh;
 	[SerializeField] private Material[] eyeMats;
 
@@ -50,6 +52,12 @@ public class EyeRotateRandom : MonoBehaviour
 		animator.enabled = true;
 		var animClip = eyeAnims[Random.Range(0, eyeAnims.Length)].name.ToString();
 		animator.Play(animClip);
+	}
+
+	private void EyeNoiseMovement()
+	{
+		_bigEyeAnim.enabled = true;
+		_bigEyeAnim.Play(eyeNoiseMoveClip.name.ToString());
 	}
 
 	private IEnumerator ChangeEyeColor(MeshRenderer eyeMesh)
