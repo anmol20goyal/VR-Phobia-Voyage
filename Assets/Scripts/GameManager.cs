@@ -11,6 +11,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Transform[] _ventExtremeTrans;
     [SerializeField] private Transform _xrOriginTrans;
 
+    [Header("*****Particle System*****")]
+    [SerializeField] private ParticleSystem _fogInVent;
+
     #endregion
 
     #region Sound Variables
@@ -46,6 +49,8 @@ public class GameManager : MonoBehaviour
 
     #region Variables
 
+    private bool _once;
+
     [Header("*****Player Position Variables*****")]
     private Vector3 _originalPlayerPosition;
     private Quaternion _originalPlayerRotation;
@@ -63,6 +68,7 @@ public class GameManager : MonoBehaviour
     {
         totalDistance = Mathf.Abs(_ventExtremeTrans[0].position.x - _ventExtremeTrans[1].position.x);
         startVentEffect = false;
+        _once = true;
 
         //set the players original position at start of the game
         _originalPlayerPosition = _xrOriginTrans.position;
@@ -127,6 +133,8 @@ public class GameManager : MonoBehaviour
 
     public void EnterVentSounds()
     {
+        _fogInVent.Play();
+
         // stop player sounds
         _playerAudioS.Stop();
         _playerAudioS.enabled = false;
@@ -160,8 +168,9 @@ public class GameManager : MonoBehaviour
         var relPos = CalculateRelativePos();
 
         //start player hot metal touch sound
-        if (relPos > 0.5f)
+        if (relPos > 0.5f && _once)
         {
+            _once = false;
             _playerHotTouchAudioS.clip = _playerHotMetalTouchClip;
             _playerHotTouchAudioS.enabled = true;
             _playerHotTouchAudioS.Play();
@@ -172,6 +181,10 @@ public class GameManager : MonoBehaviour
 
     public void EndVentSounds()
     {
+        _fogInVent.Stop();
+
+        startVentEffect = false;
+
         _playerAudioS.Stop();
         _playerAudioS.enabled = false;
 

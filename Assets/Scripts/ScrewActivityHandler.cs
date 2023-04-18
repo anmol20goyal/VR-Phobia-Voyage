@@ -19,14 +19,20 @@ public class ScrewActivityHandler : MonoBehaviour
     {
         // attach the screwdriver to the screw and rotate it (using dotween)
 
+
         _screwDriverGO.GetComponent<Rigidbody>().isKinematic = true;
         _screwDriverGO.GetComponent<XRGrabInteractable>().enabled = false;
-        _screwDriverGO.transform.DOMove(_driverPositionTrans.localPosition, 2);
-        _screwDriverGO.transform.DORotate(_driverPositionTrans.localRotation.eulerAngles, 2);
-        yield return new WaitForSeconds(2f);
+        _screwDriverGO.transform.DOMove(_driverPositionTrans.position, 1);
+        _screwDriverGO.transform.DORotate(_driverPositionTrans.localRotation.eulerAngles, 1);
+        var originRotate = _screwDriverGO.transform.localRotation.eulerAngles;
+
+        yield return new WaitForSeconds(1f);
+
         _screwOpeningSource.enabled = true;
-        _screwDriverGO.transform.DORotate(new Vector3(0, 180, 0), 2f);
+        _screwDriverGO.transform.DOLocalRotate(new Vector3(originRotate.x, 180, originRotate.z), 2f);
+
         yield return new WaitForSeconds(2f);
+
         _screwOpeningSource.enabled = false;
         _screwDriverGO.GetComponent<Rigidbody>().isKinematic = false;
 
