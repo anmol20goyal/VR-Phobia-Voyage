@@ -78,7 +78,7 @@ public class GameManager : MonoBehaviour
         _elevatorBgmMusicAudioS.Play();
         _elevatorMoveAudioS.Play();
 
-        Invoke(nameof(InitializeGame), 5f);
+        Invoke(nameof(InitializeGame), 15f);
     }
 
     private void InitializeGame()
