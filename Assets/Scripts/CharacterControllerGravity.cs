@@ -1,28 +1,35 @@
 ﻿using System;
+using TMPro;
 using UnityEngine;
 
 public class CharacterControllerGravity : MonoBehaviour
 {
+    public TMP_Text testTxt;
+
     [SerializeField] private float _characterHeight, _characterRadius;
     [SerializeField] private float _characterHeight_Default, _characterRadius_Default;
 
     private CharacterController _characterController;
     private bool _climbing = false;
 
+    private void OnEnable()
+    {
+        Climber.ClimbActive += ClimbActive;
+        Climber.ClimbInactive += ClimbInactive;
+    }
+
     private void Start()
     {
         _characterController = GetComponent<CharacterController>();
         _characterHeight_Default = _characterController.height;
         _characterRadius_Default = _characterController.radius;
-
-        Climber.ClimbActive += ClimbActive;
-        Climber.ClimbInActive += ClimbInActive;
     }
 
     private void OnDestroy()
     {
+        testTxt.text = "destroyed";
         Climber.ClimbActive -= ClimbActive;
-        Climber.ClimbInActive -= ClimbInActive;
+        Climber.ClimbInactive -= ClimbInactive;
     }
 
     private void FixedUpdate()
@@ -33,7 +40,7 @@ public class CharacterControllerGravity : MonoBehaviour
         }
     }
 
-    private void ClimbInActive()
+    private void ClimbInactive()
     {
         _climbing = true;
     }

@@ -6,7 +6,7 @@ public class ClimbInteractable : XRDirectInteractor
 {
     public static event Action<string> ClimbHandActivated, ClimbHandDeactivated;
 
-    [SerializeField] private string _controllerName;
+    private string _controllerName;
 
     protected override void Start()
     {
