@@ -64,7 +64,7 @@ public class GameManager : MonoBehaviour
 
     #endregion
 
-    private void Start()
+    private void Awake()
     {
         totalDistance = Mathf.Abs(_ventExtremeTrans[0].position.x - _ventExtremeTrans[1].position.x);
         startVentEffect = false;
@@ -77,7 +77,10 @@ public class GameManager : MonoBehaviour
         // play the elevator bgm music
         _elevatorBgmMusicAudioS.Play();
         _elevatorMoveAudioS.Play();
+    }
 
+    private void Start()
+    {
         Invoke(nameof(InitializeGame), 15f);
     }
 
@@ -101,9 +104,9 @@ public class GameManager : MonoBehaviour
 
     private void ChangeColor()
     {
-        _elevatorTopLights.DOColor(Color.red, 1f).OnComplete(() =>
+        _elevatorTopLights.DOColor(Color.red, 2f).OnComplete(() =>
         {
-            _elevatorTopLights.DOColor(Color.white, 1f).OnComplete(ChangeColor);
+            _elevatorTopLights.DOColor(Color.white, 2f).OnComplete(ChangeColor);
         });
     }
 
