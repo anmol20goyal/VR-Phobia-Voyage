@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using DG.Tweening;
 using UnityEngine.SceneManagement;
+using System.Collections;
+using Unity.VisualScripting;
 
 public class GameManager : MonoBehaviour
 {
@@ -50,6 +52,7 @@ public class GameManager : MonoBehaviour
     #region Variables
 
     private bool _once;
+    private bool _changeLiftLightColor;
 
     [Header("*****Player Position Variables*****")]
     private Vector3 _originalPlayerPosition;
@@ -60,7 +63,10 @@ public class GameManager : MonoBehaviour
     private bool startVentEffect;
 
     [Header("*****Vent Color Variables*****")]
-    [SerializeField] private Color _startColor, _endColor;
+    [SerializeField] private Color _startColor;
+    [SerializeField] private Color _endColor;
+    [SerializeField] private Color _startFogColor;
+    [SerializeField] private Color _endFogColor;
 
     #endregion
 
@@ -69,6 +75,7 @@ public class GameManager : MonoBehaviour
         totalDistance = Mathf.Abs(_ventExtremeTrans[0].position.x - _ventExtremeTrans[1].position.x);
         startVentEffect = false;
         _once = true;
+        _changeLiftLightColor = false;
 
         //set the players original position at start of the game
         _originalPlayerPosition = _xrOriginTrans.position;
@@ -76,7 +83,11 @@ public class GameManager : MonoBehaviour
 
         // play the elevator bgm music
         _elevatorBgmMusicAudioS.Play();
-        _elevatorMoveAudioS.Play();
+        //_elevatorMoveAudioS.Play();
+
+        // overall fog settings
+        RenderSettings.fog = true;
+        RenderSettings.fogColor = _startFogColor;
     }
 
     private void Start()
@@ -93,6 +104,7 @@ public class GameManager : MonoBehaviour
         _emergencyAudioS.Play();
 
         // show emergency lighting in elevator
+        _changeLiftLightColor = true;
         ChangeColor();
     }
 
@@ -104,21 +116,49 @@ public class GameManager : MonoBehaviour
 
     private void ChangeColor()
     {
-        _elevatorTopLights.DOColor(Color.red, 2f).OnComplete(() =>
+        if (!_changeLiftLightColor)
         {
-            _elevatorTopLights.DOColor(Color.white, 2f).OnComplete(ChangeColor);
-        });
+            _elevatorTopLights.color = _endColor;
+            return;
+        }
+        else
+        {
+            _elevatorTopLights.DOColor(_endColor, 2f).OnComplete(() =>
+            {
+                _elevatorTopLights.DOColor(Color.white, 2f).OnComplete(ChangeColor);
+            });
+        }
     }
+
+    public void DarkenRoom()
+    {
+        StartCoroutine(ChangeFogColor(_startFogColor, _endFogColor, 0.75f));
+    }
+
+    private IEnumerator ChangeFogColor(Color startColor, Color endColor, float duration)
+    {
+        float counter = 0;
+        while (counter < duration)
+        {
+            counter += Time.deltaTime;
+            RenderSettings.fogColor = Color.Lerp(startColor, endColor, counter / duration);
+            yield return null;
+        }
+
+        RenderSettings.fog = false;
+    }
+
 
     #region Climing Rope Methods
 
     public void ClimbRopeSoundEffects()
     {
+        _changeLiftLightColor = false;
+        
         _playerAudioS.clip = _playerClimbingRopeClip;
         _playerAudioS.enabled = true;
 
         _playerAudioS.Play();
-
     }
 
     #endregion
@@ -157,6 +197,7 @@ public class GameManager : MonoBehaviour
     public void StartVentColorEffect()
     {
         startVentEffect = true;
+        RenderSettings.fogEndDistance = 30;
     }
 
     private float CalculateRelativePos()

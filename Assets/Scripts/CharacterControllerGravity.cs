@@ -1,11 +1,8 @@
 ﻿using System;
-using TMPro;
 using UnityEngine;
 
 public class CharacterControllerGravity : MonoBehaviour
 {
-    public TMP_Text testTxt;
-
     [SerializeField] private float _characterHeight, _characterRadius;
     [SerializeField] private float _characterHeight_Default, _characterRadius_Default;
 
@@ -27,7 +24,6 @@ public class CharacterControllerGravity : MonoBehaviour
 
     private void OnDestroy()
     {
-        testTxt.text = "destroyed";
         Climber.ClimbActive -= ClimbActive;
         Climber.ClimbInactive -= ClimbInactive;
     }
