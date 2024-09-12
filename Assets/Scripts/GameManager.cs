@@ -2,7 +2,7 @@
 using DG.Tweening;
 using UnityEngine.SceneManagement;
 using System.Collections;
-using Unity.VisualScripting;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Renderer _ventRenderer;
     [SerializeField] private Transform[] _ventExtremeTrans;
     [SerializeField] private Transform _xrOriginTrans;
+    [SerializeField] private TMP_Text _instrTxt;
 
     [Header("*****Particle System*****")]
     [SerializeField] private ParticleSystem _fogInVent;
@@ -68,6 +69,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Color _startFogColor;
     [SerializeField] private Color _endFogColor;
 
+    [Header("*****TMP_Text Font Size*****")]
+    [SerializeField] private float _maxFontSize_ext;
+
     #endregion
 
     private void Awake()
@@ -102,6 +106,11 @@ public class GameManager : MonoBehaviour
         _elevatorMoveAudioS.Stop();
 
         _emergencyAudioS.Play();
+
+        //show the instruction text in the lift
+        _instrTxt.gameObject.SetActive(true);
+        _instrTxt.fontSizeMax = _maxFontSize_ext;
+        _instrTxt.text = "The lift is stuck!!\r\n\r\nUse the screwdriver to unscrew the top panel\r\nto exit the lift.";
 
         // show emergency lighting in elevator
         _changeLiftLightColor = true;
